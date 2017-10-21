@@ -1,6 +1,6 @@
 # youtube-client
 
-Build with Cargo (requires Rust Nightly):
+Build with Cargo:
 ```
 cargo build --release
 ```

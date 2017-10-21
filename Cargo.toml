@@ -4,8 +4,14 @@ version = "0.1.0"
 authors = ["Kil0meters kil0meters@protonmail.com"]
 
 [dependencies]
+clap = "2"
 glib = "^0"
 pango = "^0"
 htmlescape = "0.3"
-gtk = { version = "0.1.0", features = ["v3_20"] }
-youtube_api = { path = "youtube_api" }
+gtk = { version = "^0", features = ["v3_20"] }
+
+reqwest = "0.8"
+regex = "0.2"
+select = "0.4"
+
+
