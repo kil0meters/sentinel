@@ -2,6 +2,8 @@ use gtk;
 use pango;
 use gtk::prelude::*;
 
+use htmlescape::encode_minimal;
+
 #[derive(Debug)]
 pub struct VideoWidgets {
     pub video: gtk::ListBoxRow,
@@ -18,7 +20,7 @@ impl VideoWidgets {
     }
 }
 
-pub fn create_new_wide() -> VideoWidgets {
+pub fn create_new_wide(title_string: &str, author_string: &str, views_string: &str) -> VideoWidgets {
     let video = gtk::ListBoxRow::new();
     let layout = gtk::Layout::new(None,None);
 
@@ -27,9 +29,13 @@ pub fn create_new_wide() -> VideoWidgets {
     let views = gtk::Label::new(None);
     let thumbnail = gtk::Image::new();
 
-    title.set_markup("<span weight=\"bold\">### ####### ## #####</span>");
-    author.set_markup("#######");
-    views.set_markup("#,###,###,### #####");
+    let mut title_markup = "<span weight=\"bold\">".to_string();
+    title_markup.push_str(&encode_minimal(title_string));
+    title_markup.push_str("</span>");
+
+    title.set_markup(&title_markup);
+    author.set_markup(&encode_minimal(author_string));
+    views.set_markup(views_string);
 
     title.set_ellipsize(pango::EllipsizeMode::End);
     title.set_xalign(0.0);

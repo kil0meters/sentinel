@@ -7,7 +7,7 @@ pub mod youtube {
 
     use regex::Regex;
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct Video {
         pub views: String,
         pub likes: String,
