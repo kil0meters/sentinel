@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkListBoxRow" id="wide_video">
+    <property name="width_request">100</property>
+    <property name="height_request">80</property>
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <child>
+      <object class="GtkLayout">
+        <property name="width_request">720</property>
+        <property name="height_request">151</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkOverlay">
+            <property name="width_request">240</property>
+            <property name="height_request">135</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkImage" id="wide_thumbnail">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="index">-1</property>
+              </packing>
+            </child>
+            <child type="overlay">
+              <object class="GtkSpinner" id="wide_spinner">
+                <property name="width_request">100</property>
+                <property name="height_request">80</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="active">True</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">8</property>
+            <property name="y">8</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="wide_title">
+            <property name="width_request">456</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">title</property>
+          </object>
+          <packing>
+            <property name="x">256</property>
+            <property name="y">8</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="wide_author">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">author</property>
+          </object>
+          <packing>
+            <property name="x">256</property>
+            <property name="y">32</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="wide_views">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">views</property>
+          </object>
+          <packing>
+            <property name="x">256</property>
+            <property name="y">56</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

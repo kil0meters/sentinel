@@ -1,31 +1,42 @@
-use gtk;
+macro_rules! initialize_trending {
+    ($trending_spinner:ident, $trending_viewport:ident) => {{
+        let (tx, rx) = channel();
 
-use ui::video;
-#[allow(unused_imports)]
-use lib::youtube;
-/*
-pub fn initialize_trending_videos(number: usize) -> (Vec<video::VideoWidgets>, gtk::ListBox) {
-    let mut trending_videos: Vec<video::VideoWidgets> = vec![];
-    let list_box = gtk::ListBox::new();
-    for i in 0..number {
-        let trending_video = video::create_new_wide();
-        trending_videos.push(trending_video);
-        list_box.insert(&trending_videos[i].video, -1);
-    }
-    return (trending_videos, list_box);
-}
+        thread_local! (
+            static LOADING: RefCell<Option<(gtk::Spinner, gtk::Viewport, Receiver<Vec<youtube::Video>>)>> = RefCell::new(None);
+        );
 
-pub fn load_new_trending_videos(number: usize) {
-    println!("{} videos loaded", number);
-}
+        LOADING.with(move |loading| {
+            *loading.borrow_mut() = Some(($trending_spinner, $trending_viewport, rx));
+        });
 
-macro_rules! update_trending{
-    ($tx:ident) => {{
-        let tx_clone = $tx.clone();
         thread::spawn(move || {
-            let video_data = youtube::get_trending_videos();
-            tx_clone.send(video_data).unwrap();
-            glib::idle_add(load_trending);
+            let trending_videos = youtube::get_trending_videos();
+            tx.send(trending_videos)
+                .expect("couldn't send data to thread");
+            glib::idle_add(move || {
+                LOADING.with(|loading| {
+                    if let Some((ref trending_spinner, ref trending_viewport, ref rx)) = *loading.borrow() {
+                        if let Ok(trending_videos) = rx.try_recv() {
+                            let trending_builder = gtk::Builder::new_from_string(include_str!("../../data/ui/trending_view.ui"));
+                            let trending_listbox: gtk::ListBox = trending_builder.get_object("trending_listbox").unwrap();
+
+                            for i in 0..trending_videos.len() {
+                                let video_widget = video::create_new_wide(&trending_videos[i].title,
+                                                                          &trending_videos[i].author,
+                                                                          &trending_videos[i].views);
+
+                                trending_listbox.insert(&video_widget.video, -1);
+                            }
+
+                            trending_listbox.show_all();
+                            trending_spinner.destroy();
+                            trending_viewport.add(&trending_listbox);
+                        }
+                    }
+                });
+                glib::Continue(false)
+            });
         });
     }}
-}*/
+}

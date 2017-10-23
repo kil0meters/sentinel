@@ -1,6 +1,5 @@
 use gtk;
 use pango;
-use gtk::prelude::*;
 
 use htmlescape::encode_minimal;
 
@@ -21,13 +20,13 @@ impl VideoWidgets {
 }
 
 pub fn create_new_wide(title_string: &str, author_string: &str, views_string: &str) -> VideoWidgets {
-    let video = gtk::ListBoxRow::new();
-    let layout = gtk::Layout::new(None,None);
+    let video_builder = gtk::Builder::new_from_string(include_str!("../../data/ui/video.ui"));
 
-    let title = gtk::Label::new(None);
-    let author = gtk::Label::new(None);
-    let views = gtk::Label::new(None);
-    let thumbnail = gtk::Image::new();
+    let video: gtk::ListBoxRow = video_builder.get_object("wide_video").unwrap();
+    let title: gtk::Label = video_builder.get_object("wide_title").unwrap();
+    let author: gtk::Label = video_builder.get_object("wide_author").unwrap();
+    let views: gtk::Label = video_builder.get_object("wide_views").unwrap();
+    let thumbnail: gtk::Image = video_builder.get_object("wide_thumbnail").unwrap();
 
     let mut title_markup = "<span weight=\"bold\">".to_string();
     title_markup.push_str(&encode_minimal(title_string));
@@ -39,29 +38,6 @@ pub fn create_new_wide(title_string: &str, author_string: &str, views_string: &s
 
     title.set_ellipsize(pango::EllipsizeMode::End);
     title.set_xalign(0.0);
-
-    layout.set_size_request(720, 151);
-    thumbnail.set_size_request(240, 135);
-    title.set_size_request(456, 0);
-
-    layout.add(&title);
-    layout.add(&views);
-    layout.add(&author);
-    layout.add(&thumbnail);
-
-    layout.set_child_x(&title, 256);
-    layout.set_child_y(&title, 8);
-
-    layout.set_child_x(&author, 256);
-    layout.set_child_y(&author, 32);
-
-    layout.set_child_x(&views, 256);
-    layout.set_child_y(&views, 56);
-
-    layout.set_child_x(&thumbnail, 8);
-    layout.set_child_y(&thumbnail, 8);
-
-    video.add(&layout);
 
     let displayed_video = VideoWidgets::new(video, title, author, views, thumbnail);
     return displayed_video;
