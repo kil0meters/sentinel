@@ -5,12 +5,7 @@ use gtk;
 mod trending;
 mod video;
 
-use std::sync::mpsc::{channel, Receiver};
-use std::cell::RefCell;
-use std::thread;
-
 use gtk::prelude::*;
-
 use lib::youtube;
 
 macro_rules! if_on_stack {

@@ -1,5 +1,19 @@
+// *--------------------------------------*
+// | Beware!                              |
+// | Giant jumble of spagetti code ahead. |
+// *--------------------------------------*
+//         \   ^__^
+//          \  (oo)\_______
+//             (__)\       )\/\
+//                 ||----w |
+//                 ||     ||
+
 macro_rules! initialize_trending {
     ($trending_spinner:ident, $trending_viewport:ident) => {{
+        use std::sync::mpsc::{channel, Receiver};
+        use std::cell::RefCell;
+        use std::thread;
+
         let (tx, rx) = channel();
 
         thread_local! (
@@ -21,12 +35,13 @@ macro_rules! initialize_trending {
                             let trending_builder = gtk::Builder::new_from_string(include_str!("../../data/ui/trending_view.ui"));
                             let trending_listbox: gtk::ListBox = trending_builder.get_object("trending_listbox").unwrap();
 
+                            let mut video_widgets: Vec<video::VideoWidgets> = vec![];
                             for i in 0..trending_videos.len() {
                                 let video_widget = video::create_new_wide(&trending_videos[i].title,
                                                                           &trending_videos[i].author,
                                                                           &trending_videos[i].views);
-
                                 trending_listbox.insert(&video_widget.video, -1);
+                                video_widgets.push(video_widget);
                             }
 
                             trending_listbox.show_all();

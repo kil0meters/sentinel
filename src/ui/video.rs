@@ -1,21 +1,23 @@
 use gtk;
 use pango;
 
+use lib::youtube;
 use htmlescape::encode_minimal;
 
 #[derive(Debug)]
 pub struct VideoWidgets {
     pub video: gtk::ListBoxRow,
     pub title: gtk::Label,
+    pub spinner: gtk::Spinner,
     pub author: gtk::Label,
     pub views: gtk::Label,
     pub thumbnail: gtk::Image,
 }
 
 impl VideoWidgets {
-    fn new(video: gtk::ListBoxRow, title: gtk::Label, author: gtk::Label,
-           views: gtk::Label, thumbnail: gtk::Image) -> VideoWidgets {
-        return VideoWidgets { video, title, author, views, thumbnail };
+    fn new(video: gtk::ListBoxRow, title: gtk::Label, spinner: gtk::Spinner,
+           author: gtk::Label, views: gtk::Label, thumbnail: gtk::Image) -> VideoWidgets {
+        return VideoWidgets { video, title, spinner, author, views, thumbnail };
     }
 }
 
@@ -26,6 +28,7 @@ pub fn create_new_wide(title_string: &str, author_string: &str, views_string: &s
     let title: gtk::Label = video_builder.get_object("wide_title").unwrap();
     let author: gtk::Label = video_builder.get_object("wide_author").unwrap();
     let views: gtk::Label = video_builder.get_object("wide_views").unwrap();
+    let spinner: gtk::Spinner = video_builder.get_object("wide_spinner").unwrap();
     let thumbnail: gtk::Image = video_builder.get_object("wide_thumbnail").unwrap();
 
     let mut title_markup = "<span weight=\"bold\">".to_string();
@@ -39,6 +42,6 @@ pub fn create_new_wide(title_string: &str, author_string: &str, views_string: &s
     title.set_ellipsize(pango::EllipsizeMode::End);
     title.set_xalign(0.0);
 
-    let displayed_video = VideoWidgets::new(video, title, author, views, thumbnail);
+    let displayed_video = VideoWidgets::new(video, title, spinner, author, views, thumbnail);
     return displayed_video;
 }
