@@ -39,7 +39,13 @@ pub fn launch() {
     let trending_viewport: gtk::Viewport = builder.get_object("trending_viewport").unwrap();
     let trending_spinner: gtk::Spinner = builder.get_object("trending_spinner").unwrap();
 
-    initialize_trending!(trending_spinner, trending_viewport);
+    if youtube::test_connection() {
+        initialize_trending!(trending_spinner, trending_viewport);
+    } else {
+        println!("Could not connect to YouTube's servers.");
+        println!("Are you connected to the internet?");
+        trending_spinner.destroy();
+    }
 
     main_window.set_title("youtube-client");
     search_revealer.set_reveal_child(false);

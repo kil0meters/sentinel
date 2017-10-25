@@ -27,9 +27,10 @@ pub fn create_new_wide(
     let spinner: gtk::Spinner = video_builder.get_object("wide_spinner").unwrap();
     let thumbnail: gtk::Image = video_builder.get_object("wide_thumbnail").unwrap();
 
-    let mut title_markup = "<span weight=\"bold\">".to_string();
-    title_markup.push_str(&encode_minimal(title_string));
-    title_markup.push_str("</span>");
+    let title_markup = format!(
+        "<span weight=\"bold\">{}</span>",
+        encode_minimal(title_string)
+    );
 
     title.set_markup(&title_markup);
     author.set_markup(&encode_minimal(author_string));
@@ -44,6 +45,6 @@ pub fn create_new_wide(
         spinner,
         author,
         views,
-        thumbnail
+        thumbnail,
     }
 }

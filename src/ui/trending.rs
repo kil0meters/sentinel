@@ -20,7 +20,7 @@ macro_rules! initialize_trending {
             static LOADING: RefCell<Option<(
                 gtk::Spinner,
                 gtk::Viewport,
-                Receiver<Vec<youtube::Video>>
+                Receiver<Option<Vec<youtube::Video>>>
             )>> = RefCell::new(None);
         );
 
@@ -40,6 +40,12 @@ macro_rules! initialize_trending {
                             ref rx
                         )) = *loading.borrow() {
                         if let Ok(trending_videos) = rx.try_recv() {
+
+                            // I should probably fix this in the future.
+                            // Although, the error handling is done
+                            // in ui/mod.rs so it shouldn't cause issues.
+                            let trending_videos = trending_videos.unwrap();
+
                             let trending_builder = gtk::Builder::new_from_string(
                                 include_str!("../../data/ui/trending_view.ui")
                             );
@@ -48,7 +54,7 @@ macro_rules! initialize_trending {
                             ).unwrap();
 
                             let mut video_widgets: Vec<video::VideoWidgets> = vec![];
-                            for video in trending_videos {
+                            for video in &trending_videos {
                                 let video_widget = video::create_new_wide(
                                     &video.title,
                                     &video.author,

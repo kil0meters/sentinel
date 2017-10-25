@@ -19,15 +19,15 @@ pub mod youtube {
         pub thumbnail: Vec<u8>,
     }
 
-    fn download_webpage(url: &str) -> String {
+    fn download_webpage(url: &str) -> Option<String> {
         let mut res = reqwest::get(url).unwrap();
 
-        assert!(res.status().is_success());
-
-        let mut content = String::new();
-        res.read_to_string(&mut content).unwrap();
-
-        content
+        if res.status().is_success() {
+            let mut content = String::new();
+            res.read_to_string(&mut content).unwrap();
+            return Some(content);
+        }
+        None
     }
 
     /*pub fn get_thumbnail(id: &str) -> Vec<u8> {
@@ -61,9 +61,20 @@ pub mod youtube {
         // return video
     } */
 
-    // FIXME: make this not horrible to look at
-    pub fn get_trending_videos() -> Vec<Video> {
-        let trending_content = download_webpage("https://www.youtube.com/feed/trending");
+    pub fn test_connection() -> bool {
+        let test = reqwest::get("https://i.ytimg.com");
+        if let Err(_e) = test {
+            return false;
+        }
+        true
+    }
+
+    pub fn get_trending_videos() -> Option<Vec<Video>> {
+        let trending_content = match download_webpage("https://www.youtube.com/feed/trending") {
+            Some(x) => x,
+            None => return None,
+        };
+
         let document = Document::from(trending_content.as_str());
 
         let mut videos: Vec<Video> = Vec::new();
@@ -118,6 +129,6 @@ pub mod youtube {
             };
             videos.push(video);
         }
-        videos
+        Some(videos)
     }
 }
