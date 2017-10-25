@@ -13,5 +13,3 @@ htmlescape = "0.3"
 reqwest = "0.8"
 regex = "0.2"
 select = "0.4"
-
-

@@ -17,7 +17,11 @@ macro_rules! initialize_trending {
         let (tx, rx) = channel();
 
         thread_local! (
-            static LOADING: RefCell<Option<(gtk::Spinner, gtk::Viewport, Receiver<Vec<youtube::Video>>)>> = RefCell::new(None);
+            static LOADING: RefCell<Option<(
+                gtk::Spinner,
+                gtk::Viewport,
+                Receiver<Vec<youtube::Video>>
+            )>> = RefCell::new(None);
         );
 
         LOADING.with(move |loading| {
@@ -30,16 +34,26 @@ macro_rules! initialize_trending {
                 .expect("couldn't send data to thread");
             glib::idle_add(move || {
                 LOADING.with(|loading| {
-                    if let Some((ref trending_spinner, ref trending_viewport, ref rx)) = *loading.borrow() {
+                    if let Some((
+                            ref trending_spinner,
+                            ref trending_viewport,
+                            ref rx
+                        )) = *loading.borrow() {
                         if let Ok(trending_videos) = rx.try_recv() {
-                            let trending_builder = gtk::Builder::new_from_string(include_str!("../../data/ui/trending_view.ui"));
-                            let trending_listbox: gtk::ListBox = trending_builder.get_object("trending_listbox").unwrap();
+                            let trending_builder = gtk::Builder::new_from_string(
+                                include_str!("../../data/ui/trending_view.ui")
+                            );
+                            let trending_listbox: gtk::ListBox = trending_builder.get_object(
+                                "trending_listbox"
+                            ).unwrap();
 
                             let mut video_widgets: Vec<video::VideoWidgets> = vec![];
-                            for i in 0..trending_videos.len() {
-                                let video_widget = video::create_new_wide(&trending_videos[i].title,
-                                                                          &trending_videos[i].author,
-                                                                          &trending_videos[i].views);
+                            for video in trending_videos {
+                                let video_widget = video::create_new_wide(
+                                    &video.title,
+                                    &video.author,
+                                    &video.views
+                                );
                                 trending_listbox.insert(&video_widget.video, -1);
                                 video_widgets.push(video_widget);
                             }

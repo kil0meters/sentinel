@@ -29,7 +29,7 @@ pub fn launch() {
     let main_window: gtk::Window = builder.get_object("main_window").unwrap();
 
     // Search Button
-    let search_revealer: gtk::Revealer   = builder.get_object("search_revealer").unwrap();
+    let search_revealer: gtk::Revealer = builder.get_object("search_revealer").unwrap();
     let search_button: gtk::ToggleButton = builder.get_object("search_button").unwrap();
     // Buttons
     let refresh_button: gtk::Button = builder.get_object("refresh_button").unwrap();
@@ -47,10 +47,9 @@ pub fn launch() {
     search_button.connect_clicked(move |_| {
         let state = search_revealer.get_reveal_child();
 
-        if state == false {
+        if !state {
             search_revealer.set_reveal_child(true);
-        }
-        else {
+        } else {
             search_revealer.set_reveal_child(false);
         }
     });
