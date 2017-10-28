@@ -5,9 +5,10 @@ authors = ["Kil0meters kil0meters@protonmail.com"]
 
 [dependencies]
 clap = "2"
-glib = "^0"
-pango = "^0"
-gtk = { version = "^0", features = ["v3_20"] }
+glib = "0.3"
+pango = "0.2"
+gio = "0.2"
+gtk = { version = "0.2", features = ["v3_22"] }
 htmlescape = "0.3"
 
 reqwest = "0.8"

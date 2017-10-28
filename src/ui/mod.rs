@@ -1,78 +1,105 @@
-use glib;
-use gtk;
+mod headerbar;
+mod utils;
+mod widgets;
 
-#[macro_use]
-mod trending;
-mod video;
+use gtk;
+use gio;
 
 use gtk::prelude::*;
-use lib::youtube;
+use gio::prelude::*;
 
-macro_rules! if_on_stack {
-    ($stack_number:expr, $stack:ident, $data:block ) => {{
-        let stack = &$stack;
-        let visible_child = $stack.get_visible_child().unwrap();
-        if stack.get_child_position(&visible_child) == $stack_number {
-            $data
+// http://gtk-rs.org/tuto/closures
+macro_rules! clone {
+    (@param _) => ( _ );
+    (@param $x:ident) => ( $x );
+    ($($n:ident),+ => move || $body:expr) => (
+        {
+            $( let $n = $n.clone(); )+
+            move || $body
         }
-    }}
+    );
+    ($($n:ident),+ => move |$($p:tt),+| $body:expr) => (
+        {
+            $( let $n = $n.clone(); )+
+            move |$(clone!(@param $p),)+| $body
+        }
+    );
 }
 
-pub fn launch() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
 
-    let builder = gtk::Builder::new_from_string(include_str!("../../data/ui/main.ui"));
-
-    let main_window: gtk::Window = builder.get_object("main_window").unwrap();
-
-    // Search Button
-    let search_revealer: gtk::Revealer = builder.get_object("search_revealer").unwrap();
-    let search_button: gtk::ToggleButton = builder.get_object("search_button").unwrap();
-    // Buttons
-    let refresh_button: gtk::Button = builder.get_object("refresh_button").unwrap();
-    // Stack
-    let main_window_stack: gtk::Stack = builder.get_object("stack").unwrap();
-    // Trending
-    let trending_viewport: gtk::Viewport = builder.get_object("trending_viewport").unwrap();
-    let trending_spinner: gtk::Spinner = builder.get_object("trending_spinner").unwrap();
-
-    if youtube::test_connection() {
-        initialize_trending!(trending_spinner, trending_viewport);
-    } else {
-        println!("Could not connect to YouTube's servers.");
-        println!("Are you connected to the internet?");
-        trending_spinner.destroy();
-    }
-
-    main_window.set_title("youtube-client");
-    search_revealer.set_reveal_child(false);
-
-    search_button.connect_clicked(move |_| {
-        let state = search_revealer.get_reveal_child();
-
-        if !state {
-            search_revealer.set_reveal_child(true);
-        } else {
-            search_revealer.set_reveal_child(false);
+pub fn run_app() -> Result<(), String> {
+    let application = match gtk::Application::new(
+        Some("com.github.kil0meters.youtube-client"),
+        gio::ApplicationFlags::empty(),
+    ) {
+        Ok(app) => {
+            app.connect_activate(move |app| {
+                build_ui(app);
+            });
+            app
         }
+        Err(e) => {
+            return Err(format!("Failed to create user interface: {:?}", e));
+        }
+    };
+
+    application.run(&[]);
+
+    Ok(())
+}
+
+fn build_ui(app: &gtk::Application) {
+    let builder = gtk::Builder::new_from_string(include_str!("../../data/ui/interface.ui"));
+
+    let win = gtk::ApplicationWindow::new(app);
+    win.set_default_size(720, 500);
+
+    let app_menu: gio::Menu = builder.get_object("app_menu").unwrap();
+
+    let preferences = gio::SimpleAction::new("preferences", None);
+    let about = gio::SimpleAction::new("about", None);
+    let quit = gio::SimpleAction::new("quit", None);
+    preferences.connect_activate(move |_, _| {
+        println!("Filler");
     });
+    about.connect_activate(clone!(win => move |_, _| {
+        let about_dialog = gtk::AboutDialog::new();
+        about_dialog.set_program_name("Youtube Client");
+        about_dialog.set_authors(&["Kil0meters <kil0meters@protonmail.com>"]);
+        about_dialog.set_comments("Stream videos from the web.");
+        about_dialog.set_copyright("© Kil0meters 2017");
+        about_dialog.set_license_type(gtk::License::Gpl30);
 
-    refresh_button.connect_clicked(move |_| {
-        if_on_stack!(0, main_window_stack, {
-            println!("this feature is not yet implemented")
-        });
-    });
+        about_dialog.set_transient_for(&win);
+        about_dialog.set_attached_to(&win);
+        about_dialog.set_title("About");
 
-    main_window.set_wmclass("youtube-client", "Youtube-client");
-    main_window.show_all();
+        // Why do I need to call `.destroy()` in order for it to work properly?
+        about_dialog.run();
+        about_dialog.destroy();
+    }));
+    quit.connect_activate(clone!(win => move |_, _| {
+        win.destroy();
+    }));
+    app.add_action(&preferences);
+    app.add_action(&about);
+    app.add_action(&quit);
+    app.set_app_menu(&app_menu);
 
-    main_window.connect_delete_event(|_, _| {
-        gtk::main_quit();
-        Inhibit(false)
-    });
+    let vbox: gtk::Box = builder.get_object("vbox").unwrap();
+    let revealer: gtk::Revealer = builder.get_object("search_revealer").unwrap();
+    let stack: gtk::Stack = builder.get_object("stack").unwrap();
+    let overlay: gtk::Overlay = builder.get_object("trending_overlay").unwrap();
 
-    gtk::main();
+    utils::refresh_trending(&overlay);
+
+    let headerbar = headerbar::get_headerbar(&stack, &revealer, &overlay);
+
+    win.add(&vbox);
+    win.set_title("Youtube Client");
+    win.set_wmclass("Youtube Client", "Youtube Client");
+    win.set_titlebar(&headerbar);
+
+    win.show_all();
+    win.activate();
 }

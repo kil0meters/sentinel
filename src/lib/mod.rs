@@ -20,7 +20,10 @@ pub mod youtube {
     }
 
     fn download_webpage(url: &str) -> Option<String> {
-        let mut res = reqwest::get(url).unwrap();
+        let mut res = match reqwest::get(url) {
+            Ok(ok) => ok,
+            Err(_) => return None,
+        };
 
         if res.status().is_success() {
             let mut content = String::new();
@@ -60,14 +63,6 @@ pub mod youtube {
 
         // return video
     } */
-
-    pub fn test_connection() -> bool {
-        let test = reqwest::get("https://i.ytimg.com");
-        if let Err(_e) = test {
-            return false;
-        }
-        true
-    }
 
     pub fn get_trending_videos() -> Option<Vec<Video>> {
         let trending_content = match download_webpage("https://www.youtube.com/feed/trending") {

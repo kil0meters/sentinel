@@ -1,10 +1,8 @@
+extern crate gio;
 extern crate glib;
 extern crate gtk;
 extern crate htmlescape;
 extern crate pango;
-
-#[macro_use]
-extern crate clap;
 
 extern crate regex;
 extern crate reqwest;
@@ -13,11 +11,14 @@ extern crate select;
 mod ui;
 mod lib;
 
-fn main() {
-    clap_app!(youtube_client =>
-        (version: "0.1.0")
-        (author: "kil0meters <kil0meters@protonmail.com>")
-    ).get_matches();
+use std::process;
 
-    ui::launch();
+fn main() {
+    match ui::run_app() {
+        Ok(_) => {}
+        Err(e) => {
+            eprint!("Failed to run app: {}", e);
+            process::exit(1);
+        }
+    }
 }
