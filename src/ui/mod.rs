@@ -77,6 +77,8 @@ fn build_ui(app: &gtk::Application) {
     preferences.connect_activate(move |_, _| {
         println!("Filler");
     });
+
+
     about.connect_activate(clone!(win => move |_, _| {
         let about_dialog = gtk::AboutDialog::new();
         about_dialog.set_program_name("Youtube Client");
@@ -84,14 +86,14 @@ fn build_ui(app: &gtk::Application) {
         about_dialog.set_comments("Stream videos from the web.");
         about_dialog.set_copyright("© Kil0meters 2017");
         about_dialog.set_license_type(gtk::License::Gpl30);
-
         about_dialog.set_transient_for(&win);
-        about_dialog.set_attached_to(&win);
-        about_dialog.set_title("About");
+        about_dialog.set_wmclass("youtube client", "Youtube Client");
 
-        // Why do I need to call `.destroy()` in order for it to work properly?
+        about_dialog.connect_response(move |dialog, _| {
+            dialog.destroy();
+        });
+
         about_dialog.run();
-        about_dialog.destroy();
     }));
     quit.connect_activate(clone!(win => move |_, _| {
         win.destroy();
@@ -112,7 +114,7 @@ fn build_ui(app: &gtk::Application) {
 
     win.add(&vbox);
     win.set_title("Youtube Client");
-    win.set_wmclass("Youtube Client", "Youtube Client");
+    win.set_wmclass("youtube client", "Youtube Client");
     win.set_titlebar(&headerbar);
 
     win.show_all();
