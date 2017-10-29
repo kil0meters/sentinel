@@ -1,4 +1,4 @@
-# youtube-client
+# Sentinel
 
 Build with Cargo:
 ```

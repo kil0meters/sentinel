@@ -48,10 +48,8 @@ pub mod youtube {
         None
     }
 
-    /*pub fn get_thumbnail(id: &str) -> Vec<u8> {
-        let mut url = "https://i.ytimg.com/vi/".to_string();
-        url.push_str(id);
-        url.push_str("/mqdefault.jpg");
+    /*pub fn get_thumbnail(id: &str) -> Option<Vec<u8>> {
+        let url = format!("https://i.ytimg.com/vi/{}/mqdefault.jpg", id);
 
         let mut res = reqwest::get(&url).unwrap();
 
@@ -65,19 +63,6 @@ pub mod youtube {
 
         image
     }*/
-
-    /* pub fn video_info(id: String) /* -> Video */ {
-        if id.len() > 10 || id.len() < 10 {
-            panic!("Invalid Video ID")
-        }
-
-        let mut url = String::from("https://www.youtube.com/watch?v=");
-        url.push_str(&id);
-        let video_content = download_webpage(&url);
-        let document = Document::from(video_content.as_str());
-
-        // return video
-    } */
 
     pub fn get_trending_videos() -> Option<Vec<Video>> {
         let trending_content = match download_webpage("https://www.youtube.com/feed/trending") {
@@ -120,10 +105,6 @@ pub mod youtube {
 
             let likes = "".to_string();
             let dislikes = "".to_string();
-
-            //let mut thumbnail_url = "https://i.ytimg.com/vi/".to_string();
-            //thumbnail_url.push_str(&id);
-            //thumbnail_url.push_str("mqdefault.jpg");
 
             let thumbnail = vec![]; // get_thumbnail(&thumbnail_url);
 

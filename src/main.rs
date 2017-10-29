@@ -28,6 +28,9 @@ mod lib;
 
 use std::process;
 
+pub const NAME: &str = "Sentinel";
+pub const TAGLINE: &str = "Stream videos from the web.";
+
 fn main() {
     match ui::run_app() {
         Ok(_) => {}

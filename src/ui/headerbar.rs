@@ -18,6 +18,8 @@ use gtk::prelude::*;
 
 use ui::utils;
 
+use NAME;
+
 // http://gtk-rs.org/tuto/closures
 macro_rules! clone {
     (@param _) => ( _ );
@@ -64,5 +66,6 @@ pub fn get_headerbar(
 
     stack_switcher.set_stack(stack);
 
+    headerbar.set_title(NAME);
     headerbar
 }

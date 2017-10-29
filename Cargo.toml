@@ -1,5 +1,5 @@
 [package]
-name = "youtube-client"
+name = "sentinel"
 version = "0.1.0"
 authors = ["Kil0meters kil0meters@protonmail.com"]
 

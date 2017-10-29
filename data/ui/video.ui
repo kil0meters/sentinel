@@ -30,12 +30,17 @@
               </packing>
             </child>
             <child type="overlay">
-              <object class="GtkSpinner" id="wide_spinner">
-                <property name="width_request">100</property>
-                <property name="height_request">80</property>
+              <object class="GtkLabel" id="wide_duration">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="active">True</property>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="margin_right">8</property>
+                <property name="margin_bottom">8</property>
+                <property name="label" translatable="yes">999:59</property>
+                <attributes>
+                  <attribute name="scale" value="1.2"/>
+                </attributes>
               </object>
             </child>
           </object>
@@ -45,37 +50,60 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="wide_title">
+          <object class="GtkBox">
             <property name="width_request">456</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">title</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="wide_title">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">title</property>
+                <property name="wrap">True</property>
+                <attributes>
+                  <attribute name="scale" value="1.1000000000000001"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="wide_author">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">author</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">2</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="wide_views">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">views</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">2</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="x">256</property>
             <property name="y">8</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="wide_author">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">author</property>
-          </object>
-          <packing>
-            <property name="x">256</property>
-            <property name="y">32</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="wide_views">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">views</property>
-          </object>
-          <packing>
-            <property name="x">256</property>
-            <property name="y">56</property>
           </packing>
         </child>
       </object>

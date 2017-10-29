@@ -119,3 +119,7 @@ fn refresh_trending_view() -> glib::Continue {
     });
     glib::Continue(false)
 }
+
+//pub fn download_and_cache_image(url: &str) -> Option<String> {
+//    :
+//}
