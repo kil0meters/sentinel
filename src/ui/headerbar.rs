@@ -39,7 +39,7 @@ macro_rules! clone {
 pub fn get_headerbar(
     stack: &gtk::Stack,
     revealer: &gtk::Revealer,
-    overlay: &gtk::Overlay,
+    viewport: &gtk::Viewport,
 ) -> gtk::HeaderBar {
     let builder = gtk::Builder::new_from_string(include_str!("../../data/ui/headerbar.ui"));
 
@@ -47,8 +47,6 @@ pub fn get_headerbar(
     let refresh_button: gtk::Button = builder.get_object("refresh_button").unwrap();
     let search_button: gtk::Button = builder.get_object("search_button").unwrap();
     let stack_switcher: gtk::StackSwitcher = builder.get_object("stack_switcher").unwrap();
-
-    revealer.set_reveal_child(false);
 
     search_button.connect_clicked(clone!(revealer => move |_| {
         let state = revealer.get_reveal_child();
@@ -60,8 +58,8 @@ pub fn get_headerbar(
         }
 
     }));
-    refresh_button.connect_clicked(clone!(overlay => move |_| {
-        utils::refresh_trending(&overlay);
+    refresh_button.connect_clicked(clone!(viewport => move |_| {
+        utils::refresh_trending(&viewport);
     }));
 
     stack_switcher.set_stack(stack);

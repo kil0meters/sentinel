@@ -48,38 +48,38 @@ thread_local! {
     #[allow(unknown_lints)]
     #[allow(type_complexity)]
     static GLOBAL: RefCell<Option<(
-        gtk::Overlay,
+        gtk::Viewport,
         Receiver<Option<Vec<youtube::Video>>>,
     )>> = RefCell::new(None);
 }
 
-pub fn refresh_trending(overlay: &gtk::Overlay) {
-    let children = overlay.get_children();
+pub fn refresh_trending(viewport: &gtk::Viewport) {
+    let children = viewport.get_children();
     for child in children {
         child.destroy();
     }
     let spinner = gtk::Spinner::new();
     spinner.show();
     spinner.start();
-    overlay.add(&spinner);
+    viewport.add(&spinner);
 
     let (tx, rx) = channel();
-    GLOBAL.with(clone!(overlay => move |global| {
-        *global.borrow_mut() = Some((overlay, rx));
+    GLOBAL.with(clone!(viewport => move |global| {
+        *global.borrow_mut() = Some((viewport, rx));
     }));
 
     thread::spawn(move || {
         let trending_videos = youtube::get_trending_videos();
-        tx.send(trending_videos)
-            .expect("couldn't send data to thread");
-        // Refresh data in main thread.
-        glib::idle_add(refresh_trending_view);
+        // Refresh if not busy
+        if tx.send(trending_videos).is_ok() {
+            glib::idle_add(refresh_trending_view);
+        }
     });
 }
 
 fn refresh_trending_view() -> glib::Continue {
     GLOBAL.with(|global| {
-        if let Some((ref overlay, ref rx)) = *global.borrow() {
+        if let Some((ref viewport, ref rx)) = *global.borrow() {
             if let Ok(trending_videos) = rx.try_recv() {
                 match trending_videos {
                     Some(videos) => {
@@ -88,12 +88,18 @@ fn refresh_trending_view() -> glib::Continue {
                         listbox.set_halign(gtk::Align::Center);
 
                         for video in &videos {
-                            let video_widget =
-                                video_wide::new(&video.title, &video.author, &video.views);
+                            let video_widget = video_wide::new(
+                                &video.title,
+                                &video.author,
+                                &video.views,
+                                &video.duration,
+                            );
                             listbox.insert(&video_widget, -1);
                         }
+                        let spinner = viewport.get_children();
+                        spinner[0].destroy();
                         listbox.show_all();
-                        overlay.add_overlay(&listbox);
+                        viewport.add(&listbox);
                     }
                     None => {
                         // If there's a network error such as no internet connection.
@@ -102,10 +108,10 @@ fn refresh_trending_view() -> glib::Continue {
                             "<span size=\"x-large\">Couldn't fetch data.\
                              \nAre you connected to the internet?</span>",
                         );
-                        let spinner = overlay.get_children();
+                        let spinner = viewport.get_children();
                         spinner[0].destroy();
                         label.show();
-                        overlay.add(&label);
+                        viewport.add(&label);
                     }
                 };
             }

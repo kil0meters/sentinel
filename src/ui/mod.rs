@@ -106,11 +106,11 @@ fn build_ui(app: &gtk::Application) {
     let vbox: gtk::Box = builder.get_object("vbox").unwrap();
     let revealer: gtk::Revealer = builder.get_object("search_revealer").unwrap();
     let stack: gtk::Stack = builder.get_object("stack").unwrap();
-    let overlay: gtk::Overlay = builder.get_object("trending_overlay").unwrap();
+    let viewport: gtk::Viewport = builder.get_object("trending_viewport").unwrap();
 
-    utils::refresh_trending(&overlay);
+    utils::refresh_trending(&viewport);
 
-    let headerbar = headerbar::get_headerbar(&stack, &revealer, &overlay);
+    let headerbar = headerbar::get_headerbar(&stack, &revealer, &viewport);
 
     win.add(&vbox);
     win.set_title("Youtube Client");
