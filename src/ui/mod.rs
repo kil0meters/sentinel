@@ -79,22 +79,22 @@ fn build_ui(app: &gtk::Application) {
 
     preferences::initialize(&preferences, &win);
 
-    about.connect_activate(clone!(win => move |_, _| {
-        let about_dialog = gtk::AboutDialog::new();
-        about_dialog.set_program_name(NAME);
-        about_dialog.set_authors(&["Kil0meters <kil0meters@protonmail.com>"]);
-        about_dialog.set_comments(TAGLINE);
-        about_dialog.set_copyright("© Kil0meters 2017");
-        about_dialog.set_license_type(gtk::License::Gpl30);
-        about_dialog.set_transient_for(&win);
-        about_dialog.set_wmclass(NAME, NAME);
+    let about_dialog = gtk::AboutDialog::new();
+    about_dialog.set_program_name(NAME);
+    about_dialog.set_authors(&["Kil0meters <kil0meters@protonmail.com>"]);
+    about_dialog.set_comments(TAGLINE);
+    about_dialog.set_copyright("© Kil0meters 2017");
+    about_dialog.set_license_type(gtk::License::Gpl30);
+    about_dialog.set_transient_for(&win);
+    about_dialog.set_wmclass(NAME, NAME);
 
+    about.connect_activate(move |_, _| {
         about_dialog.connect_response(move |dialog, _| {
-            dialog.destroy();
+            dialog.hide();
         });
 
         about_dialog.run();
-    }));
+    });
     quit.connect_activate(clone!(win => move |_, _| {
         win.destroy();
     }));
