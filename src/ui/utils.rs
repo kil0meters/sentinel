@@ -14,15 +14,17 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use gtk;
+use gdk_pixbuf::Pixbuf;
 use glib;
 use gtk::prelude::*;
 
 use std::sync::mpsc::{channel, Receiver};
 use std::cell::RefCell;
+use std::path::Path;
 use std::thread;
 
 use ui::widgets::video_wide;
-use lib::youtube;
+use lib::{downloader, youtube};
 
 // http://gtk-rs.org/tuto/closures
 macro_rules! clone {
@@ -45,11 +47,15 @@ macro_rules! clone {
 
 // Create a thread local storage key to transfer data.
 thread_local! {
-    #[allow(unknown_lints)]
-    #[allow(type_complexity)]
+    #[allow(unknown_lints, type_complexity)]
     static GLOBAL: RefCell<Option<(
         gtk::Viewport,
         Receiver<Option<Vec<youtube::Video>>>,
+    )>> = RefCell::new(None);
+    #[allow(unknown_lints, type_complexity)]
+    static THUMBNAIL: RefCell<Option<(
+        Vec<gtk::Image>,
+        Receiver<Option<String>>,
     )>> = RefCell::new(None);
 }
 
@@ -87,19 +93,24 @@ fn refresh_trending_view() -> glib::Continue {
                         listbox.set_size_request(720, 0);
                         listbox.set_halign(gtk::Align::Center);
 
-                        for video in &videos {
+                        let mut thumbnails: Vec<gtk::Image> = vec![];
+                        let mut ids: Vec<String> = vec![];
+                        for mut video in &videos {
                             let video_widget = video_wide::new(
                                 &video.title,
                                 &video.author,
                                 &video.views,
                                 &video.duration,
                             );
-                            listbox.insert(&video_widget, -1);
+                            listbox.insert(&video_widget.video, -1);
+                            ids.push(video.id.to_owned());
+                            thumbnails.push(video_widget.thumbnail)
                         }
                         let spinner = viewport.get_children();
                         spinner[0].destroy();
                         listbox.show_all();
                         viewport.add(&listbox);
+                        load_thumbnails(thumbnails, ids);
                     }
                     None => {
                         // If there's a network error such as no internet connection.
@@ -120,6 +131,36 @@ fn refresh_trending_view() -> glib::Continue {
     glib::Continue(false)
 }
 
-//pub fn download_and_cache_image(url: &str) -> Option<String> {
-//    :
-//}
+// Caches image at $HOME/.config/$NAME_NOCAPS/cache/images/$ID.jpg
+fn load_thumbnails(images: Vec<gtk::Image>, ids: Vec<String>) {
+    let (tx, rx) = channel();
+    THUMBNAIL.with(move |thumbnail| {
+        *thumbnail.borrow_mut() = Some((images, rx));
+    });
+    thread::spawn(move || {
+        let cache_dir = format!("{}/cache/images", downloader::get_config_dir());
+        for (i, id) in ids.iter().enumerate() {
+            let file = format!("{}.jpg", id);
+            let file_dir = format!("{}/{}", &cache_dir, &file);
+            if !Path::new(&file_dir).is_file() {
+                let url = format!("https://i.ytimg.com/vi/{}/mqdefault.jpg", id);
+                downloader::download_to(&cache_dir, &file, &url);
+            }
+            tx.send(Some(file_dir.clone()))
+                .expect("Could not send data to thread.");
+            glib::idle_add(move || {
+                THUMBNAIL.with(|thumbnail| {
+                    if let Some((ref images, ref rx)) = *thumbnail.borrow() {
+                        if let Ok(file_dir) = rx.try_recv() {
+                            let file_dir = file_dir.unwrap();
+                            let pixbuf =
+                                Pixbuf::new_from_file_at_size(&file_dir, 240, 135).unwrap();
+                            images[i].set_from_pixbuf(&pixbuf);
+                        }
+                    }
+                });
+                glib::Continue(false)
+            });
+        }
+    });
+}

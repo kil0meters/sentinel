@@ -9,7 +9,7 @@ cargo build --release
 
 ## Short Term
 
-- [ ] Full support for trending tab. 
+- [X] Full support for trending tab. 
 - [ ] Support watching videos inline.
 
 ## Medium Term

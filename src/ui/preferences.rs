@@ -136,7 +136,7 @@ fn initialize_settings(settings: &gtk::Settings, dark_mode_switch: &gtk::Switch)
         Ok(ok) => ok,
         Err(_) => {
             println!("Invalid config file.\nTry deleting it at {}", config_path);
-            process::exit(1);
+            process::exit(1)
         }
     };
 
@@ -151,7 +151,7 @@ fn initialize_config_file() {
 
     let config_file_path = format!("{}/config.toml", config_path);
 
-    if Path::new(&config_file_path).is_file() == false {
+    if !Path::new(&config_file_path).is_file() {
         DirBuilder::new()
             .recursive(true)
             .create(&config_path)

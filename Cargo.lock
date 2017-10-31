@@ -3,10 +3,12 @@ name = "sentinel"
 version = "0.1.0"
 dependencies = [
  "clap 2.26.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gdk-pixbuf 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gio 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glib 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "gtk 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "htmlescape 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.11.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pango 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",

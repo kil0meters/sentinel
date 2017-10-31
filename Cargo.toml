@@ -9,9 +9,11 @@ glib = "0.3"
 pango = "0.2"
 gio = "0.2"
 gtk = { version = "0.2", features = ["v3_22"] }
+gdk-pixbuf = "0.2"
 htmlescape = "0.3"
 
 reqwest = "0.8"
+hyper = "0.11.6"
 regex = "0.2"
 select = "0.4"
 toml = "0.4"

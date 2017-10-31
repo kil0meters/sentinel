@@ -14,17 +14,17 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use gtk;
+use gtk::prelude::*;
 
 use htmlescape::encode_minimal;
-
-use gtk::prelude::*;
+use ui::widgets::VideoWidget;
 
 pub fn new(
     title_string: &str,
     author_string: &str,
     views_string: &str,
     duration_string: &str,
-) -> gtk::ListBoxRow {
+) -> VideoWidget {
     let video_builder = gtk::Builder::new_from_string(include_str!("../../../data/ui/video.ui"));
 
     let video: gtk::ListBoxRow = video_builder.get_object("wide_video").unwrap();
@@ -32,7 +32,7 @@ pub fn new(
     let author: gtk::Label = video_builder.get_object("wide_author").unwrap();
     let views: gtk::Label = video_builder.get_object("wide_views").unwrap();
     let duration: gtk::Label = video_builder.get_object("wide_duration").unwrap();
-    // let thumbnail: gtk::Image = video_builder.get_object("wide_thumbnail").unwrap();
+    let thumbnail: gtk::Image = video_builder.get_object("wide_thumbnail").unwrap();
 
     let title_markup = format!(
         "<span weight=\"semibold\" font=\"11\">{}</span>",
@@ -46,5 +46,12 @@ pub fn new(
 
     title.set_xalign(0.0);
 
-    video
+    VideoWidget {
+        video,
+        title,
+        author,
+        views,
+        duration,
+        thumbnail,
+    }
 }
