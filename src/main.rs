@@ -22,6 +22,10 @@ extern crate pango;
 extern crate regex;
 extern crate reqwest;
 extern crate select;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate toml;
 
 mod ui;
 mod lib;
@@ -29,7 +33,8 @@ mod lib;
 use std::process;
 
 pub const NAME: &str = "Sentinel";
-pub const TAGLINE: &str = "Stream videos from the web.";
+pub const NAME_NOCAPS: &str = "sentinel";
+pub const TAGLINE: &'static str = "Stream videos from the web.";
 
 fn main() {
     match ui::run_app() {

@@ -16,10 +16,10 @@
 mod headerbar;
 mod utils;
 mod widgets;
+mod preferences;
 
 use gtk;
 use gio;
-
 use gtk::prelude::*;
 use gio::prelude::*;
 
@@ -76,10 +76,8 @@ fn build_ui(app: &gtk::Application) {
     let preferences = gio::SimpleAction::new("preferences", None);
     let about = gio::SimpleAction::new("about", None);
     let quit = gio::SimpleAction::new("quit", None);
-    preferences.connect_activate(move |_, _| {
-        println!("Filler");
-    });
 
+    preferences::initialize(&preferences, &win);
 
     about.connect_activate(clone!(win => move |_, _| {
         let about_dialog = gtk::AboutDialog::new();
