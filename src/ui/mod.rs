@@ -19,6 +19,7 @@ mod widgets;
 mod preferences;
 
 use gtk;
+use gdk;
 use gio;
 use gtk::prelude::*;
 use gio::prelude::*;
@@ -70,6 +71,7 @@ fn build_ui(app: &gtk::Application) {
 
     let win = gtk::ApplicationWindow::new(app);
     win.set_default_size(720, 500);
+    win.set_gravity(gdk::Gravity::Center);
 
     let app_menu: gio::Menu = builder.get_object("app_menu").unwrap();
 
@@ -87,12 +89,11 @@ fn build_ui(app: &gtk::Application) {
     about_dialog.set_license_type(gtk::License::Gpl30);
     about_dialog.set_transient_for(&win);
     about_dialog.set_wmclass(NAME, NAME);
+    about_dialog.connect_response(move |dialog, _| {
+        dialog.hide();
+    });
 
     about.connect_activate(move |_, _| {
-        about_dialog.connect_response(move |dialog, _| {
-            dialog.hide();
-        });
-
         about_dialog.run();
     });
     quit.connect_activate(clone!(win => move |_, _| {

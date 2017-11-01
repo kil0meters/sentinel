@@ -23,6 +23,8 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::thread;
 
+use lib::utils::get_config_dir;
+
 use ui::widgets::video_wide;
 use lib::{downloader, youtube};
 
@@ -44,7 +46,6 @@ macro_rules! clone {
     );
 }
 
-
 // Create a thread local storage key to transfer data.
 thread_local! {
     #[allow(unknown_lints, type_complexity)]
@@ -58,6 +59,7 @@ thread_local! {
         Receiver<Option<String>>,
     )>> = RefCell::new(None);
 }
+
 
 pub fn refresh_trending(viewport: &gtk::Viewport) {
     let children = viewport.get_children();
@@ -138,7 +140,7 @@ fn load_thumbnails(images: Vec<gtk::Image>, ids: Vec<String>) {
         *thumbnail.borrow_mut() = Some((images, rx));
     });
     thread::spawn(move || {
-        let cache_dir = format!("{}/cache/images", downloader::get_config_dir());
+        let cache_dir = format!("{}/cache/images", get_config_dir());
         for (i, id) in ids.iter().enumerate() {
             let file = format!("{}.jpg", id);
             let file_dir = format!("{}/{}", &cache_dir, &file);

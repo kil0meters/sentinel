@@ -1,14 +1,7 @@
-use std::env;
-use std::fs::{rename, DirBuilder, File};
+use std::fs::{self, DirBuilder, File};
 use std::io::{BufWriter, Read, Write};
 use reqwest;
 use hyper::header::*;
-
-use NAME_NOCAPS;
-
-pub fn get_config_dir() -> String {
-    format!("{}/.config/{}", env::var("HOME").unwrap(), NAME_NOCAPS)
-}
 
 /// Downloads `url` to `target`
 pub fn download_to(dir: &str, file: &str, url: &str) {
@@ -42,6 +35,6 @@ pub fn download_to(dir: &str, file: &str, url: &str) {
             }
         }
         let target = format!("{}/{}", dir, file);
-        rename(out_file, target).unwrap();
+        fs::rename(out_file, target).unwrap();
     }
 }
