@@ -177,7 +177,6 @@ fn initialize_settings(settings: &gtk::Settings, dark_mode_switch: &gtk::Switch)
 
 fn initialize_config_file() {
     let config_path = get_config_dir();
-
     let config_file_path = format!("{}/config.toml", config_path);
 
     if !Path::new(&config_file_path).is_file() {

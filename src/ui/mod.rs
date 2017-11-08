@@ -17,12 +17,15 @@ mod headerbar;
 mod utils;
 mod widgets;
 mod preferences;
+mod video_player;
 
 use gtk;
 use gdk;
 use gio;
 use gtk::prelude::*;
 use gio::prelude::*;
+
+use std::cell::RefCell;
 
 use {NAME, TAGLINE};
 
@@ -42,6 +45,14 @@ macro_rules! clone {
             move |$(clone!(@param $p),)+| $body
         }
     );
+}
+
+thread_local! {
+    #[allow(unknown_lints, type_complexity)]
+    static VPLAYER_STACK: RefCell<Option<(
+        gtk::Stack,
+        gtk::Overlay,
+    )>> = RefCell::new(None);
 }
 
 
@@ -67,7 +78,8 @@ pub fn run_app() -> Result<(), String> {
 }
 
 fn build_ui(app: &gtk::Application) {
-    let builder = gtk::Builder::new_from_string(include_str!("../../data/ui/interface.ui"));
+    let builder = include_str!("../../data/ui/interface.ui");
+    let builder = gtk::Builder::new_from_string(builder);
 
     let win = gtk::ApplicationWindow::new(app);
     win.set_default_size(720, 500);
@@ -106,10 +118,18 @@ fn build_ui(app: &gtk::Application) {
 
     let vbox: gtk::Box = builder.get_object("vbox").unwrap();
     let revealer: gtk::Revealer = builder.get_object("search_revealer").unwrap();
+    let vplayer_stack: gtk::Stack = builder.get_object("vplayer_stack").unwrap();
+    let vplayer_overlay: gtk::Overlay = builder.get_object("vplayer_overlay").unwrap();
     let stack: gtk::Stack = builder.get_object("stack").unwrap();
     let viewport: gtk::Viewport = builder.get_object("trending_viewport").unwrap();
 
     utils::refresh_trending(&viewport);
+
+    // Move `vplayer_stack` into a thread local storage key
+    // to be used later to play videos and view accounts.
+    VPLAYER_STACK.with(move |stack| {
+        *stack.borrow_mut() = Some((vplayer_stack, vplayer_overlay));
+    });
 
     let headerbar = headerbar::get_headerbar(&stack, &revealer, &viewport);
 

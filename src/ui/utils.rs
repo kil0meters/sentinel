@@ -13,7 +13,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use gtk;
+use gtk::{self, Container, IsA};
 use gdk_pixbuf::Pixbuf;
 use glib;
 use gtk::prelude::*;
@@ -26,6 +26,7 @@ use std::thread;
 use lib::utils::get_config_dir;
 
 use ui::widgets::video_wide;
+use ui::video_player;
 use lib::{downloader, youtube};
 
 // http://gtk-rs.org/tuto/closures
@@ -60,7 +61,6 @@ thread_local! {
     )>> = RefCell::new(None);
 }
 
-
 pub fn refresh_trending(viewport: &gtk::Viewport) {
     let children = viewport.get_children();
     for child in children {
@@ -94,19 +94,36 @@ fn refresh_trending_view() -> glib::Continue {
                         let listbox = gtk::ListBox::new();
                         listbox.set_size_request(720, 0);
                         listbox.set_halign(gtk::Align::Center);
+                        listbox.set_activate_on_single_click(true);
+                        // This shouldn't be needed, and doesn't work
+                        // correctly.
+                        // https://github.com/gtk-rs/gtk/issues/520
+                        listbox.connect_row_selected(move |_, row| {
+                            if let Some(row) = row.clone() {
+                                row.activate();
+                            }
+                        });
 
                         let mut thumbnails: Vec<gtk::Image> = vec![];
                         let mut ids: Vec<String> = vec![];
                         for mut video in &videos {
-                            let video_widget = video_wide::new(
+                            let video_widget: (
+                                gtk::ListBoxRow,
+                                gtk::Image,
+                            ) = video_wide::new(
                                 &video.title,
                                 &video.author,
                                 &video.views,
                                 &video.duration,
                             );
-                            listbox.insert(&video_widget.video, -1);
+                            listbox.insert(&video_widget.0, -1);
+                            let id = video.id.clone();
+                            video_widget.0.connect_activate(move |_| {
+                                let id = id.to_owned();
+                                video_player::watch(id);
+                            });
                             ids.push(video.id.to_owned());
-                            thumbnails.push(video_widget.thumbnail)
+                            thumbnails.push(video_widget.1);
                         }
                         let spinner = viewport.get_children();
                         spinner[0].destroy();
@@ -134,7 +151,7 @@ fn refresh_trending_view() -> glib::Continue {
 }
 
 // Caches image at $HOME/.config/$NAME_NOCAPS/cache/images/$ID.jpg
-fn load_thumbnails(images: Vec<gtk::Image>, ids: Vec<String>) {
+pub fn load_thumbnails(images: Vec<gtk::Image>, ids: Vec<String>) {
     let (tx, rx) = channel();
     THUMBNAIL.with(move |thumbnail| {
         *thumbnail.borrow_mut() = Some((images, rx));

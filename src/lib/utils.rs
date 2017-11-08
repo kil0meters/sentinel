@@ -9,7 +9,7 @@ use NAME_NOCAPS;
 pub fn pretty_bytes(num: f64) -> String {
     let negative = if num.is_sign_positive() { "" } else { "-" };
     let num = num.abs(); //sets num to absolute value
-    let units = ["B", "kB", "MB", "GB", "TB", "PB", "EB"]; // probably enough for now
+    let units = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]; // probably enough for now
     if num < 1_f64 {
         return format!("{}{} {}", negative, num, "B");
     }
@@ -22,7 +22,23 @@ pub fn pretty_bytes(num: f64) -> String {
         .parse::<f64>()
         .unwrap() * 1_f64;
     let unit = units[exponent as usize];
-    format!("{}{} {}", negative, pretty_bytes, unit)
+    format!("{}{}{}", negative, pretty_bytes, unit)
+}
+
+// Basically a clone of the thing above.
+// I should probably try to minimize redundancy.
+pub fn pretty_number(num: f64) -> String {
+    let units = ["", "K", "M", "B", "T", "Q"]; // probably enough for now
+    let delimiter = 1000_f64;
+    let exponent = cmp::min(
+        (num.ln() / delimiter.ln()).floor() as i32,
+        (units.len() - 1) as i32,
+    );
+    let pretty_number = format!("{:.0}", num / delimiter.powi(exponent))
+        .parse::<f64>()
+        .unwrap() * 1_f64;
+    let unit = units[exponent as usize];
+    format!("{}{}", pretty_number, unit)
 }
 
 pub fn get_config_dir() -> String {

@@ -17,31 +17,36 @@ use gtk;
 use gtk::prelude::*;
 
 use htmlescape::encode_minimal;
-use ui::video_player;
+use lib::utils::pretty_number;
 
 pub fn new(
     title_string: &str,
     author_string: &str,
     views_string: &str,
     duration_string: &str,
-) -> (gtk::ListBoxRow, gtk::Image) {
-    let video_builder = gtk::Builder::new_from_string(include_str!("../../../data/ui/widgets.ui"));
+    id: &str,
+) -> (gtk::Grid, gtk::Image) {
+    let builder = include_str!("../../../data/ui/widgets.ui");
+    let builder = gtk::Builder::new_from_string(builder);
 
-    let video: gtk::ListBoxRow = video_builder.get_object("wide_video").unwrap();
-    let title: gtk::Label = video_builder.get_object("wide_video_title").unwrap();
-    let author: gtk::Label = video_builder.get_object("wide_video_author").unwrap();
-    let views: gtk::Label = video_builder.get_object("wide_video_views").unwrap();
-    let duration: gtk::Label = video_builder.get_object("wide_video_duration").unwrap();
-    let thumbnail: gtk::Image = video_builder.get_object("wide_video_thumbnail").unwrap();
+    let video: gtk::Grid = builder.get_object("video").unwrap();
+    let title: gtk::Label = builder.get_object("video_title").unwrap();
+    let author_and_views: gtk::Label = builder.get_object("video_author_and_views").unwrap();
+    let duration: gtk::Label = builder.get_object("video_duration").unwrap();
+    let thumbnail: gtk::Image = builder.get_object("video_thumbnail").unwrap();
 
     let title_markup = format!(
         "<span weight=\"semibold\" font=\"11\">{}</span>",
         encode_minimal(title_string)
     );
+    let author_and_views_markup = format!(
+        "{} · {}",
+        encode_minimal(author_string),
+        pretty_number(views_string.parse::<f64>().unwrap()),
+    );
 
     title.set_markup(&title_markup);
-    author.set_markup(&encode_minimal(author_string));
-    views.set_markup(views_string);
+    author_and_views.set_markup(&author_and_views_markup);
     duration.set_markup(duration_string);
 
     (video, thumbnail)

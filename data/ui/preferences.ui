@@ -12,10 +12,10 @@
         <property name="name">8</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">8</property>
-        <property name="margin_right">8</property>
-        <property name="margin_top">8</property>
-        <property name="margin_bottom">8</property>
+        <property name="margin_left">16</property>
+        <property name="margin_right">16</property>
+        <property name="margin_top">16</property>
+        <property name="margin_bottom">16</property>
         <property name="transition_duration">400</property>
         <property name="transition_type">slide-left-right</property>
         <child>
@@ -23,13 +23,13 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">center</property>
-            <property name="valign">center</property>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="margin_right">8</property>
+                <property name="margin_bottom">8</property>
                 <property name="label" translatable="yes">Dark Theme:</property>
               </object>
               <packing>
@@ -39,21 +39,55 @@
             </child>
             <child>
               <object class="GtkSwitch" id="toggle_dark_mode_switch">
+                <property name="width_request">90</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="halign">start</property>
+                <property name="halign">end</property>
                 <property name="valign">center</property>
                 <property name="margin_left">8</property>
+                <property name="margin_bottom">8</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkLabel" id="clear_cache_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="margin_right">8</property>
+                <property name="label" translatable="yes">Cache:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="clear_cache_button">
+                <property name="label" translatable="yes">Clear</property>
+                <property name="width_request">90</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <style>
+                  <class name="destructive-action"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="name">appearance</property>
-            <property name="title" translatable="yes">Appearance</property>
+            <property name="name">general</property>
+            <property name="title" translatable="yes">General</property>
           </packing>
         </child>
         <child>
