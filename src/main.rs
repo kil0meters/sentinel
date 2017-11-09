@@ -13,6 +13,12 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
+
+mod ui;
+mod lib;
+
 extern crate gdk;
 extern crate gdk_pixbuf;
 extern crate gio;
@@ -21,23 +27,20 @@ extern crate gtk;
 extern crate htmlescape;
 extern crate pango;
 
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
+extern crate toml;
 extern crate hyper;
 extern crate regex;
 extern crate reqwest;
 extern crate select;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate toml;
-
-mod ui;
-mod lib;
 
 use std::process;
 
 pub const NAME: &str = "Sentinel";
 pub const NAME_NOCAPS: &str = "sentinel";
-pub const TAGLINE: &'static str = "Stream videos from the web.";
+pub const TAGLINE: &str = "Stream videos from the web.";
 
 fn main() {
     match ui::run_app() {

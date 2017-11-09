@@ -17,7 +17,6 @@ use gtk;
 use gtk::prelude::*;
 
 use htmlescape::encode_minimal;
-use ui::video_player;
 
 pub fn new(
     title_string: &str,

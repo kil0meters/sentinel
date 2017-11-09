@@ -13,11 +13,12 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-mod headerbar;
+#[macro_use]
 mod utils;
+mod headerbar;
+mod views;
 mod widgets;
 mod preferences;
-mod video_player;
 
 use gtk;
 use gdk;
@@ -26,35 +27,27 @@ use gtk::prelude::*;
 use gio::prelude::*;
 
 use std::cell::RefCell;
+use std::sync::mpsc::Receiver;
 
 use {NAME, TAGLINE};
 
-// http://gtk-rs.org/tuto/closures
-macro_rules! clone {
-    (@param _) => ( _ );
-    (@param $x:ident) => ( $x );
-    ($($n:ident),+ => move || $body:expr) => (
-        {
-            $( let $n = $n.clone(); )+
-            move || $body
-        }
-    );
-    ($($n:ident),+ => move |$($p:tt),+| $body:expr) => (
-        {
-            $( let $n = $n.clone(); )+
-            move |$(clone!(@param $p),)+| $body
-        }
-    );
-}
+use lib::youtube;
+use ui::views::trending;
 
+// Define thread local storage keys.
 thread_local! {
+    static VPLAYER: RefCell<Option<(gtk:: Stack, gtk::Overlay)>> = RefCell::new(None);
     #[allow(unknown_lints, type_complexity)]
-    static VPLAYER_STACK: RefCell<Option<(
-        gtk::Stack,
-        gtk::Overlay,
+    static TRENDING: RefCell<Option<(
+        gtk::Viewport,
+        Receiver<Option<Vec<youtube::Video>>>,
+    )>> = RefCell::new(None);
+    #[allow(unknown_lints, type_complexity)]
+    static THUMBNAILS: RefCell<Option<(
+        Vec<gtk::Image>,
+        Receiver<Option<String>>,
     )>> = RefCell::new(None);
 }
-
 
 pub fn run_app() -> Result<(), String> {
     let application = match gtk::Application::new(
@@ -62,9 +55,7 @@ pub fn run_app() -> Result<(), String> {
         gio::ApplicationFlags::empty(),
     ) {
         Ok(app) => {
-            app.connect_activate(move |app| {
-                build_ui(app);
-            });
+            app.connect_activate(move |app| { build_ui(app); });
             app
         }
         Err(e) => {
@@ -82,7 +73,7 @@ fn build_ui(app: &gtk::Application) {
     let builder = gtk::Builder::new_from_string(builder);
 
     let win = gtk::ApplicationWindow::new(app);
-    win.set_default_size(720, 500);
+    win.set_default_size(732, 500);
     win.set_gravity(gdk::Gravity::Center);
 
     let app_menu: gio::Menu = builder.get_object("app_menu").unwrap();
@@ -101,13 +92,9 @@ fn build_ui(app: &gtk::Application) {
     about_dialog.set_license_type(gtk::License::Gpl30);
     about_dialog.set_transient_for(&win);
     about_dialog.set_wmclass(NAME, NAME);
-    about_dialog.connect_response(move |dialog, _| {
-        dialog.hide();
-    });
+    about_dialog.connect_response(move |dialog, _| { dialog.hide(); });
 
-    about.connect_activate(move |_, _| {
-        about_dialog.run();
-    });
+    about.connect_activate(move |_, _| { about_dialog.run(); });
     quit.connect_activate(clone!(win => move |_, _| {
         win.destroy();
     }));
@@ -123,12 +110,12 @@ fn build_ui(app: &gtk::Application) {
     let stack: gtk::Stack = builder.get_object("stack").unwrap();
     let viewport: gtk::Viewport = builder.get_object("trending_viewport").unwrap();
 
-    utils::refresh_trending(&viewport);
+    trending::refresh(&viewport);
 
-    // Move `vplayer_stack` into a thread local storage key
-    // to be used later to play videos and view accounts.
-    VPLAYER_STACK.with(move |stack| {
-        *stack.borrow_mut() = Some((vplayer_stack, vplayer_overlay));
+    // move vplayer_stack and vplayer_overlay into a thread local storage
+    // key to be used later
+    VPLAYER.with(move |vplayer| {
+        *vplayer.borrow_mut() = Some((vplayer_stack, vplayer_overlay));
     });
 
     let headerbar = headerbar::get_headerbar(&stack, &revealer, &viewport);

@@ -24,7 +24,6 @@ pub fn new(
     author_string: &str,
     views_string: &str,
     duration_string: &str,
-    id: &str,
 ) -> (gtk::Grid, gtk::Image) {
     let builder = include_str!("../../../data/ui/widgets.ui");
     let builder = gtk::Builder::new_from_string(builder);
@@ -39,8 +38,9 @@ pub fn new(
         "<span weight=\"semibold\" font=\"11\">{}</span>",
         encode_minimal(title_string)
     );
-    let author_and_views_markup = format!(
-        "{} · {}",
+    let author_and_views_markup =
+        format!(
+        "{} · {} views",
         encode_minimal(author_string),
         pretty_number(views_string.parse::<f64>().unwrap()),
     );

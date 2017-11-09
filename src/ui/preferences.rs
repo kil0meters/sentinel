@@ -115,9 +115,11 @@ pub fn initialize(settings_action: &gio::SimpleAction, main_win: &gtk::Applicati
     clear_cache_button.connect_clicked(move |_| {
         let cache_dir = format!("{}/cache", get_config_dir());
         match fs::read_dir(&cache_dir) {
-            Ok(entries) => for entry in entries {
-                fs::remove_dir_all(entry.unwrap().path()).unwrap();
-            },
+            Ok(entries) => {
+                for entry in entries {
+                    fs::remove_dir_all(entry.unwrap().path()).unwrap();
+                }
+            }
             Err(e) => eprintln!("Error deleting {:?}, caused by I/O error: {}", cache_dir, e),
         };
         update_cache(&clear_cache_label, &clear_cache_button_clone_2);
@@ -168,8 +170,9 @@ fn initialize_settings(settings: &gtk::Settings, dark_mode_switch: &gtk::Switch)
         }
         Err(_) => {
             eprintln!("WARNING: Invalid config file. It was automatically deleted.");
-            fs::remove_file(config_path)
-                .unwrap_or_else(|x| eprintln!("Unable to delete file: {:?}", x));
+            fs::remove_file(config_path).unwrap_or_else(|x| {
+                eprintln!("Unable to delete file: {:?}", x)
+            });
             initialize_config_file();
         }
     };
@@ -191,9 +194,7 @@ fn initialize_config_file() {
         // Default settings.
         let config_data = Config {
             general: General { dark_mode: false },
-            video: Video {
-                preferred_resolution: String::from("720p"),
-            },
+            video: Video { preferred_resolution: String::from("720p") },
         };
 
         let config_toml = Value::try_from(config_data).unwrap();

@@ -48,18 +48,20 @@ pub fn get_config_dir() -> String {
 pub fn dir_size_recursive(path: &Path) -> u64 {
     let mut size: u64 = 0;
     match fs::read_dir(&path) {
-        Ok(entries) => for entry in entries {
-            let entry = entry.unwrap();
-            let path = entry.path();
-            let meta = entry.metadata().unwrap();
+        Ok(entries) => {
+            for entry in entries {
+                let entry = entry.unwrap();
+                let path = entry.path();
+                let meta = entry.metadata().unwrap();
 
-            if meta.is_file() {
-                size += meta.size();
-            } else {
-                size += 4096;
-                size += dir_size_recursive(&path);
+                if meta.is_file() {
+                    size += meta.size();
+                } else {
+                    size += 4096;
+                    size += dir_size_recursive(&path);
+                }
             }
-        },
+        }
         Err(e) => eprintln!("Error reading {:?}, caused by I/O error: {}", path, e),
     }
     size

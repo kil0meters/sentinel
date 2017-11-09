@@ -32,6 +32,7 @@ pub struct Video {
 }
 
 impl Video {
+    #[allow(unknown_lints, too_many_arguments)]
     fn new(
         views: String,
         likes: String,
@@ -132,14 +133,13 @@ pub fn video_info(id: String) -> Option<(Video, Vec<Video>)> {
             .text()
             .to_string();
         let r_views = re.replace_all(&r_views_raw, "").into();
-        let r_duration = node.find(Class("video-time")).next().unwrap().text().into();
+        let r_duration = node.find(Class("video-time")).next().unwrap().text();
         let r_title_raw = node.find(Class("title")).next().unwrap().text();
         let r_title = title_regex.replace_all(&r_title_raw, "").into();
         let r_author = node.find(Class("attribution").child(Name("span")))
             .next()
             .unwrap()
-            .text()
-            .into();
+            .text();
         let r_id_raw: Vec<_> = node.find(Class("yt-uix-sessionlink"))
             .next()
             .unwrap()
@@ -198,9 +198,9 @@ pub fn get_trending_videos() -> Option<Vec<Video>> {
             .text();
         let id = video_url[1].into();
 
-        let yt_lockup_meta_info_children: Vec<_> = node.find(
-            Class("yt-lockup-meta-info").child(Name("li")),
-        ).collect();
+        let yt_lockup_meta_info_children: Vec<_> = node.find(Class("yt-lockup-meta-info").child(
+            Name("li"),
+        )).collect();
 
         let views = if yt_lockup_meta_info_children.get(1).is_none() {
             "hidden".into()

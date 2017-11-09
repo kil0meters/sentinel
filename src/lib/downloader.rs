@@ -12,9 +12,9 @@ pub fn download_to(dir: &str, file: &str, url: &str) {
 
         let headers = res.headers().clone();
 
-        let content_length = headers
-            .get::<ContentLength>()
-            .map(|content_length| **content_length);
+        let content_length = headers.get::<ContentLength>().map(|content_length| {
+            **content_length
+        });
 
         let chunk_size = match content_length {
             Some(x) => x as u8 / 99,

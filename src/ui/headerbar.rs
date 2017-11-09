@@ -16,27 +16,8 @@
 use gtk;
 use gtk::prelude::*;
 
-use ui::utils;
-
+use ui::views::trending;
 use NAME;
-
-// http://gtk-rs.org/tuto/closures
-macro_rules! clone {
-    (@param _) => ( _ );
-    (@param $x:ident) => ( $x );
-    ($($n:ident),+ => move || $body:expr) => (
-        {
-            $( let $n = $n.clone(); )+
-            move || $body
-        }
-    );
-    ($($n:ident),+ => move |$($p:tt),+| $body:expr) => (
-        {
-            $( let $n = $n.clone(); )+
-            move |$(clone!(@param $p),)+| $body
-        }
-    );
-}
 
 pub fn get_headerbar(
     stack: &gtk::Stack,
@@ -61,7 +42,7 @@ pub fn get_headerbar(
 
     }));
     refresh_button.connect_clicked(clone!(viewport => move |_| {
-        utils::refresh_trending(&viewport);
+        trending::refresh(&viewport);
     }));
 
     stack_switcher.set_stack(stack);
