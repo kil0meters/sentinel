@@ -1,33 +1,18 @@
-//  Copyright (C) 2017  Kil0meters
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 use gtk;
 use gdk;
 use glib;
 use gtk::prelude::*;
 
-use ui::VPLAYER;
+use app::VPLAYER;
 
-use lib::youtube;
+use sentinel_api::youtube;
 
 use std::thread;
 use std::sync::{mpsc, Arc, Mutex};
 
-use lib::utils::pretty_number;
-use ui::widgets::video;
-use ui::utils::load_thumbnails;
+use sentinel_api::utils::pretty_number;
+use widgets::video;
+use utils::load_thumbnails;
 
 use htmlescape::encode_minimal;
 
@@ -39,7 +24,7 @@ pub fn watch(id: String) {
     // show loading spinner instantly on click
     VPLAYER.with(|vplayer| if let Some((ref stack, ref overlay)) = *vplayer.borrow() {
         for child in overlay.get_children() {
-            if child.get_name() == Some("GtkSpinner".into()) {
+            if WidgetExt::get_name(&child) == Some("GtkSpinner".into()) {
                 let spinner: gtk::Spinner = child.clone().downcast().unwrap();
                 spinner.start();
                 spinner.show();
@@ -61,7 +46,7 @@ pub fn watch(id: String) {
                         match video_info {
                             Some(video_info) => {
                                 for child in overlay.get_children() {
-                                    if child.get_name() == Some("GtkSpinner".to_string()) {
+                                    if WidgetExt::get_name(&child) == Some("GtkSpinner".to_string()) {
                                         let spinner: gtk::Spinner = child.clone().downcast().unwrap();
                                         spinner.stop();
                                         spinner.hide();
@@ -78,7 +63,7 @@ pub fn watch(id: String) {
                             }
                             None => {
                                 for child in overlay.get_children() {
-                                    if child.get_name() == Some("GtkSpinner".to_string()) {
+                                    if WidgetExt::get_name(&child) == Some("GtkSpinner".to_string()) {
                                         let spinner: gtk::Spinner = child.clone().downcast().unwrap();
                                         spinner.stop();
                                         spinner.hide();
@@ -97,8 +82,7 @@ pub fn watch(id: String) {
 }
 
 fn video_loading_error(error: &str, stack: &gtk::Stack) -> gtk::Grid {
-    let builder = include_str!("../../../data/ui/video_player.ui");
-    let builder = gtk::Builder::new_from_string(builder);
+    let builder = gtk::Builder::new_from_resource("/com/github/kil0meters/sentinel/gtk/video_player.ui");
 
     let error_view: gtk::Grid = builder.get_object("error_view").unwrap();
     let error_label: gtk::Label = builder.get_object("error_message").unwrap();
@@ -123,8 +107,7 @@ fn video_view(
     video_info: &youtube::Video,
     related_videos: Vec<youtube::Video>,
 ) -> (gtk::Grid) {
-    let builder = include_str!("../../../data/ui/video_player.ui");
-    let builder = gtk::Builder::new_from_string(builder);
+    let builder = gtk::Builder::new_from_resource("/com/github/kil0meters/sentinel/gtk/video_player.ui");
 
     let video_player_view: gtk::Grid = builder.get_object("video_player_view").unwrap();
     let close_button: gtk::Button = builder.get_object("close_button").unwrap();

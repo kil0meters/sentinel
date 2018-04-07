@@ -1,0 +1,17 @@
+[package]
+name = "sentinel-api"
+version = "0.1.0"
+authors = ["Kil0meters kil0meters@protonmail.com"]
+workspace = "../"
+
+
+[dependencies]
+reqwest = "0.8"
+hyper = "0.11.6"
+regex = "0.2"
+select = "0.4"
+toml = "0.4"
+serde_derive = "1"
+serde = "1"
+
+clippy = {version = "*", optional = true}

@@ -1,30 +1,9 @@
-//  Copyright (C) 2017  Kil0meters
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-// "I'll write just a settings dialog real quick because that
-// will be simpler than getting thumbnails to work."
-//
-// I was wrong.
-// Send help.
-
 use toml::{self, Value};
 use std::io::{Read, Write};
 use std::path::Path;
 use std::fs::{self, DirBuilder, File};
 
-use lib::utils::{dir_size_recursive, get_config_dir, pretty_bytes};
+use sentinel_api::utils::{dir_size_recursive, get_config_dir, pretty_bytes};
 
 use NAME;
 
@@ -32,7 +11,6 @@ use gio;
 use gtk::{self, SettingsExt};
 use gio::prelude::*;
 use gtk::prelude::*;
-
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Config {
@@ -82,8 +60,7 @@ macro_rules! write_setting {
 pub fn initialize(settings_action: &gio::SimpleAction, main_win: &gtk::ApplicationWindow) {
     initialize_config_file();
 
-    let builder = include_str!("../../data/ui/preferences.ui");
-    let builder = gtk::Builder::new_from_string(builder);
+    let builder = gtk::Builder::new_from_resource("/com/github/kil0meters/sentinel/gtk/widgets.ui");
     let dark_mode_switch: gtk::Switch = builder.get_object("toggle_dark_mode_switch").unwrap();
     let preferences_win: gtk::Window = builder.get_object("window").unwrap();
     let clear_cache_button: gtk::Button = builder.get_object("clear_cache_button").unwrap();

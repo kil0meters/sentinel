@@ -5,11 +5,11 @@ use gtk::prelude::*;
 use std::sync::mpsc::channel;
 use std::thread;
 
-use ui::TRENDING;
-use ui::utils::load_thumbnails;
-use ui::widgets::video_wide;
-use ui::views::video_player;
-use lib::youtube;
+use app::TRENDING;
+use utils::load_thumbnails;
+use widgets::video_wide;
+use views::video_player;
+use sentinel_api::youtube;
 
 pub fn refresh(viewport: &gtk::Viewport) {
     let children = viewport.get_children();

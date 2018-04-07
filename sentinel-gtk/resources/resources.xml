@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/kil0meters/sentinel/">
+    <file compressed="true" preprocess="xml-stripblanks">gtk/video_player.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">gtk/widgets.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">gtk/preferences.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">gtk/interface.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">gtk/headerbar.ui</file>
+  </gresource>
+</gresources>

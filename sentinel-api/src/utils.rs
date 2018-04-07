@@ -1,10 +1,8 @@
 use std::fs;
+use std::cmp;
 use std::path::Path;
 use std::os::unix::fs::MetadataExt;
 use std::env;
-use std::cmp;
-
-use NAME_NOCAPS;
 
 pub fn pretty_bytes(num: f64) -> String {
     let negative = if num.is_sign_positive() { "" } else { "-" };
@@ -42,7 +40,7 @@ pub fn pretty_number(num: f64) -> String {
 }
 
 pub fn get_config_dir() -> String {
-    format!("{}/.config/{}", env::var("HOME").unwrap(), NAME_NOCAPS)
+    format!("{}/.config/sentinel", env::var("HOME").unwrap())
 }
 
 pub fn dir_size_recursive(path: &Path) -> u64 {

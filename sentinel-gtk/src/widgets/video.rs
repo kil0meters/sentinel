@@ -1,23 +1,8 @@
-//  Copyright (C) 2017  Kil0meters
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 use gtk;
 use gtk::prelude::*;
 
 use htmlescape::encode_minimal;
-use lib::utils::pretty_number;
+use sentinel_api::utils::pretty_number;
 
 pub fn new(
     title_string: &str,
@@ -25,8 +10,7 @@ pub fn new(
     views_string: &str,
     duration_string: &str,
 ) -> (gtk::Grid, gtk::Image) {
-    let builder = include_str!("../../../data/ui/widgets.ui");
-    let builder = gtk::Builder::new_from_string(builder);
+    let builder = gtk::Builder::new_from_resource("/com/github/kil0meters/sentinel/gtk/widgets.ui");
 
     let video: gtk::Grid = builder.get_object("video").unwrap();
     let title: gtk::Label = builder.get_object("video_title").unwrap();

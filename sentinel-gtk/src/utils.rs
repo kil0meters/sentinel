@@ -1,18 +1,3 @@
-//  Copyright (C) 2017  Kil0meters
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 use gtk;
 use gdk_pixbuf::Pixbuf;
 use glib;
@@ -22,10 +7,10 @@ use std::sync::mpsc::channel;
 use std::path::Path;
 use std::thread;
 
-use lib::utils::get_config_dir;
+use sentinel_api::utils::get_config_dir;
 
-use ui::THUMBNAILS;
-use lib::downloader;
+use app::THUMBNAILS;
+use sentinel_api::downloader;
 
 // http://gtk-rs.org/tuto/closures
 #[macro_export]

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Sentinel
+Comment=Sentinel is a YouTube client which does not use the YouTube API.
+GenericName=YouTube Client
+Exec=sentinel
+Icon=com.github.Sentinel
+Type=Application
+StartupNotify=true
+X-GNOME-UsesNotification=true
+Categories=GNOME;Video;Media;
+Keywords=YouTube;;youtube.com;player
